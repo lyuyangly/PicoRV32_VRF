@@ -131,16 +131,17 @@ clear_bss:
     la t0, __bss_begin
     la t1, __bss_end
     li t2, 0x00000000
-clear_sbss_loop:
+clear_bss_loop:
     sw      t2, (t0)
     addi    t0, t0, 4
-    blt     t0, t1, clear_sbss_loop
+    blt     t0, t1, clear_bss_loop
 
 #load data to RAM
     la t0, __load_start
     la t1, __data_start
     la t2, __data_end
     beq t1, t2, jump_to_main
+
 load_data_loop:
     lw t3, (t0)
     sw t3, (t1)
