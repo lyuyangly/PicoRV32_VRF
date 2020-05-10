@@ -1,24 +1,9 @@
-//***************************************************************************
-//   Copyright(c) 2017, Lyu Yang
-//   All rights reserved
-//
-//   File name        :   ahb_ram.v
-//   Module name      :
-//   Author           :   Lyu Yang
-//   Email            :
-//   Date             :   2016-12-00
-//   Version          :   v1.0
-//
-//   Abstract         :
-//
-//   Modification history
-//   ------------------------------------------------------------------------
-// Version       Date(yyyy/mm/dd)   name
-// Description
-//
-// $Log$
-//***************************************************************************
-`timescale 1ns / 1ps
+//##################################################################################################
+//  Project     : AMBA AHB RAM
+//  Author      : Lyu Yang
+//  Date        : 2020-05-10
+//  Description : AHB RAM
+//##################################################################################################
 module ahb_ram (
     input   wire                hclk        ,
     input   wire                hreset_n    ,
@@ -55,37 +40,37 @@ always @(posedge hclk, negedge hreset_n)
     else
         hbus_ena_d <= hbus_ena;
 
-always @(*)
+always @(posedge hclk, negedge hreset_n)
     if(hbus_ena & hwrite) begin
         case(hsize)
             3'b000: begin
                 case(haddr[1:0])
-                    2'b00: mem_wstrb = 4'b0001;
-                    2'b01: mem_wstrb = 4'b0010;
-                    2'b10: mem_wstrb = 4'b0100;
-                    2'b11: mem_wstrb = 4'b1000;
+                    2'b00: mem_wstrb <= 4'b0001;
+                    2'b01: mem_wstrb <= 4'b0010;
+                    2'b10: mem_wstrb <= 4'b0100;
+                    2'b11: mem_wstrb <= 4'b1000;
                 endcase
             end
             3'b001: begin
                 case(haddr[0])
-                    1'b0: mem_wstrb = 4'b0011;
-                    1'b1: mem_wstrb = 4'b1100;
+                    1'b0: mem_wstrb <= 4'b0011;
+                    1'b1: mem_wstrb <= 4'b1100;
                 endcase
             end
             3'b010: begin
-                mem_wstrb = 4'b1111;
+                mem_wstrb <= 4'b1111;
             end
             default: begin
-                mem_wstrb = 4'b0000;
+                mem_wstrb <= 4'b0000;
             end
         endcase
     end
     else begin
-        mem_wstrb = 4'b0000;
+        mem_wstrb <= 4'b0000;
     end
 
 always @(posedge hclk)
-    if(hbus_ena & ~hbus_ena_d) begin
+    if(hbus_ena_d) begin
         if(mem_wstrb[0])
             mem[haddr[31:2]][ 7: 0] <= hwdata[ 7: 0];
         if(mem_wstrb[1])
@@ -101,4 +86,3 @@ always @(posedge hclk)
         hrdata <= mem[haddr[31:2]];
 
 endmodule
-
