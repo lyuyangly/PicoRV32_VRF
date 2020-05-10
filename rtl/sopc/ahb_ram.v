@@ -27,7 +27,7 @@ reg     [3:0]   mem_wstrb;
 reg     [31:0]  mem [0:MEM_SIZE-1];
 
 // Memory Init
-initial $readmemh("../frw/led_test.txt", mem);
+initial $readmemh("../../frw/app_test.txt", mem);
 
 // AHB response always OKAY
 assign hresp = 2'h0;
@@ -41,7 +41,9 @@ always @(posedge hclk, negedge hreset_n)
         hbus_ena_d <= hbus_ena;
 
 always @(posedge hclk, negedge hreset_n)
-    if(hbus_ena & hwrite) begin
+    if(~hreset_n)
+        mem_wstrb <= 4'h0;
+    else if(hbus_ena & hwrite) begin
         case(hsize)
             3'b000: begin
                 case(haddr[1:0])
